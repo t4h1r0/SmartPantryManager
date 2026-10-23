@@ -1,5 +1,6 @@
 package com.tahirsallie.smartpantry.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +77,8 @@ public class SuggestedRecipesFragment extends Fragment
 
     @Override
     public void onRecipeClick(Recipe recipe) {
-        // Wired to the Recipe Detail screen in stage 9
-        Toast.makeText(requireContext(), recipe.getName(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(requireContext(), RecipeDetailActivity.class);
+        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_ID, recipe.getId());
+        startActivity(intent);
     }
 }

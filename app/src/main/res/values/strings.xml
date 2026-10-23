@@ -12,6 +12,9 @@
     <string name="nav_suggested">Suggested</string>
     <string name="suggested_empty">No recipes match your pantry yet - add more ingredients.</string>
     <string name="suggested_header_none">Recipes you can make right now</string>
+    <string name="detail_ingredients">Ingredients</string>
+    <string name="detail_method">Method</string>
+    <string name="recipe_not_found">Recipe not found</string>
 
     <string-array name="units">
         <item>pcs</item>
