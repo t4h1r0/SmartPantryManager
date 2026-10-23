@@ -1,5 +1,10 @@
 package com.tahirsallie.smartpantry.db;
 
+import com.tahirsallie.smartpantry.model.Recipe;
+import com.tahirsallie.smartpantry.model.RecipeIngredient;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -64,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + RI_UNIT + " TEXT NOT NULL, "
                 + "FOREIGN KEY(" + RI_RECIPE_ID + ") REFERENCES "
                 + T_RECIPES + "(" + R_ID + ") ON DELETE CASCADE)");
+        RecipeSeeder.seed(db);   // pre-load recipes on first run
     }
 
     @Override
@@ -129,7 +135,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         return db.delete(T_PANTRY, P_ID + "=?", new String[]{String.valueOf(id)});
     }
+    // ---------- RECIPES (read-only) ----------
 
+    /** All recipes, each with its ingredient list attached (two queries, no N+1 problem). */
+    public List<Recipe> getAllRecipes() {
+        SQLiteDatabase db = getReadableDatabase();
+        Map<Long, Recipe> byId = new LinkedHashMap<>();
+
+        try (Cursor c = db.query(T_RECIPES, null, null, null, null, null,
+                R_NAME + " COLLATE NOCASE ASC")) {
+            while (c.moveToNext()) {
+                long id = c.getLong(c.getColumnIndexOrThrow(R_ID));
+                byId.put(id, new Recipe(id,
+                        c.getString(c.getColumnIndexOrThrow(R_NAME)),
+                        c.getString(c.getColumnIndexOrThrow(R_STEPS))));
+            }
+        }
+
+        try (Cursor c = db.query(T_RING, null, null, null, null, null, null)) {
+            while (c.moveToNext()) {
+                Recipe r = byId.get(c.getLong(c.getColumnIndexOrThrow(RI_RECIPE_ID)));
+                if (r != null) r.getIngredients().add(cursorToIngredient(c));
+            }
+        }
+        return new ArrayList<>(byId.values());
+    }
+
+    /** One recipe with its ingredients, or null if the id does not exist. */
+    public Recipe getRecipe(long recipeId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Recipe recipe = null;
+
+        try (Cursor c = db.query(T_RECIPES, null, R_ID + "=?",
+                new String[]{String.valueOf(recipeId)}, null, null, null)) {
+            if (c.moveToFirst()) {
+                recipe = new Recipe(recipeId,
+                        c.getString(c.getColumnIndexOrThrow(R_NAME)),
+                        c.getString(c.getColumnIndexOrThrow(R_STEPS)));
+            }
+        }
+        if (recipe == null) return null;
+
+        try (Cursor c = db.query(T_RING, null, RI_RECIPE_ID + "=?",
+                new String[]{String.valueOf(recipeId)}, null, null, null)) {
+            while (c.moveToNext()) {
+                recipe.getIngredients().add(cursorToIngredient(c));
+            }
+        }
+        return recipe;
+    }
+
+    public int getRecipeCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        try (Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + T_RECIPES, null)) {
+            return c.moveToFirst() ? c.getInt(0) : 0;
+        }
+    }
+
+    private RecipeIngredient cursorToIngredient(Cursor c) {
+        return new RecipeIngredient(
+                c.getString(c.getColumnIndexOrThrow(RI_NAME)),
+                c.getDouble(c.getColumnIndexOrThrow(RI_QTY)),
+                c.getString(c.getColumnIndexOrThrow(RI_UNIT)));
+    }
     private PantryItem cursorToItem(Cursor c) {
         return new PantryItem(
                 c.getLong(c.getColumnIndexOrThrow(P_ID)),

@@ -54,6 +54,7 @@ public class PantryFragment extends Fragment implements PantryAdapter.OnItemActi
             Intent intent = new Intent(requireContext(), AddEditIngredientActivity.class);
             startActivity(intent);                       // no extra = add mode
         });
+
     }
 
     @Override
