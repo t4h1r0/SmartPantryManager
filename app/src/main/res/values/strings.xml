@@ -8,6 +8,10 @@
     <string name="hint_expiry">Expiry date (optional)</string>
     <string name="save">Save</string>
     <string name="clear_date">Clear date</string>
+    <string name="nav_pantry">Pantry</string>
+    <string name="nav_suggested">Suggested</string>
+    <string name="suggested_empty">No recipes match your pantry yet - add more ingredients.</string>
+    <string name="suggested_header_none">Recipes you can make right now</string>
 
     <string-array name="units">
         <item>pcs</item>
