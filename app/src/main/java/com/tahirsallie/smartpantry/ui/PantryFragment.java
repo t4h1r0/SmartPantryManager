@@ -1,5 +1,6 @@
 package com.tahirsallie.smartpantry.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,10 +50,10 @@ public class PantryFragment extends Fragment implements PantryAdapter.OnItemActi
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
-        // Wired to the Add/Edit screen in stage 5
-        fab.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Add screen coming in stage 5",
-                        Toast.LENGTH_SHORT).show());
+        fab.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), AddEditIngredientActivity.class);
+            startActivity(intent);                       // no extra = add mode
+        });
     }
 
     @Override
@@ -71,8 +72,9 @@ public class PantryFragment extends Fragment implements PantryAdapter.OnItemActi
 
     @Override
     public void onEdit(PantryItem item) {
-        // Wired to the Add/Edit screen in stage 5
-        Toast.makeText(requireContext(), "Edit: " + item.getName(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(requireContext(), AddEditIngredientActivity.class);
+        intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_ID, item.getId());   // edit mode
+        startActivity(intent);
     }
 
     @Override

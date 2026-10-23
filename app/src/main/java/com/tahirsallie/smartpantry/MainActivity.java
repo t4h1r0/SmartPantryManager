@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.tahirsallie.smartpantry.ui.PantryFragment;
+import com.tahirsallie.smartpantry.db.DatabaseHelper;
+import com.tahirsallie.smartpantry.model.PantryItem;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,5 +21,6 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, new PantryFragment())
                     .commit();
         }
+
     }
 }
