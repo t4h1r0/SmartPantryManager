@@ -19,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tahirsallie.smartpantry.R;
 import com.tahirsallie.smartpantry.db.DatabaseHelper;
 import com.tahirsallie.smartpantry.model.PantryItem;
+import com.tahirsallie.smartpantry.util.AppPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,7 @@ public class PantryFragment extends Fragment implements PantryAdapter.OnItemActi
 
     private void loadItems() {
         List<PantryItem> items = dbHelper.getAllPantryItems();
+        adapter.setHighlightExpiring(AppPrefs.isExpiryHighlightEnabled(requireContext()));
         adapter.setItems(items);
         boolean empty = items.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);

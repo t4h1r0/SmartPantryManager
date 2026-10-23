@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tahirsallie.smartpantry.ui.PantryFragment;
 import com.tahirsallie.smartpantry.ui.SuggestedRecipesFragment;
+import com.tahirsallie.smartpantry.ui.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.nav_suggested) {
                 showFragment(new SuggestedRecipesFragment(), "Suggested Recipes");
+                return true;
+            } else if (id == R.id.nav_settings) {
+                showFragment(new SettingsFragment(), "Settings");
                 return true;
             }
             return false;

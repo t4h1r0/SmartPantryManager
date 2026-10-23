@@ -1,5 +1,7 @@
 package com.tahirsallie.smartpantry.ui;
 
+import android.graphics.Color;
+import com.tahirsallie.smartpantry.logic.ExpiryUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,12 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
 
     private List<PantryItem> items;
     private final OnItemActionListener listener;
+
+    private boolean highlightExpiring = true;
+
+    public void setHighlightExpiring(boolean highlightExpiring) {
+        this.highlightExpiring = highlightExpiring;
+    }
 
     public PantryAdapter(List<PantryItem> items, OnItemActionListener listener) {
         this.items = items;
@@ -59,7 +67,22 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
             holder.expiry.setVisibility(View.GONE);
         } else {
             holder.expiry.setVisibility(View.VISIBLE);
-            holder.expiry.setText("Expires: " + expiry);
+            String text = "Expires: " + expiry;
+            int color = holder.defaultExpiryColor;      // reset: rows are recycled
+
+            Integer days = highlightExpiring ? ExpiryUtils.daysUntilExpiry(expiry) : null;
+            if (days != null) {
+                if (days < 0) {
+                    text = "Expired (" + expiry + ")";
+                    color = Color.parseColor("#C62828");              // red
+                } else if (days <= ExpiryUtils.SOON_DAYS) {
+                    text = (days == 0) ? "Expires today"
+                            : "Expires in " + days + (days == 1 ? " day" : " days");
+                    color = Color.parseColor("#E65100");              // orange
+                }
+            }
+            holder.expiry.setText(text);
+            holder.expiry.setTextColor(color);
         }
 
         holder.itemView.setOnClickListener(v -> listener.onEdit(item));
@@ -74,6 +97,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
     static class PantryViewHolder extends RecyclerView.ViewHolder {
         final TextView name, quantity, expiry;
         final ImageButton delete;
+        final int defaultExpiryColor;
 
         PantryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +105,8 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
             quantity = itemView.findViewById(R.id.text_quantity);
             expiry = itemView.findViewById(R.id.text_expiry);
             delete = itemView.findViewById(R.id.button_delete);
+            defaultExpiryColor = expiry.getCurrentTextColor();
         }
     }
-}
+    }
+

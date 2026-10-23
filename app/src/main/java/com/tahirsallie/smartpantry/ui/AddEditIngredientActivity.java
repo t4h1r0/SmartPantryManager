@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.tahirsallie.smartpantry.R;
 import com.tahirsallie.smartpantry.db.DatabaseHelper;
 import com.tahirsallie.smartpantry.model.PantryItem;
+import com.tahirsallie.smartpantry.util.AppPrefs;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -64,6 +65,15 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             populateForm(itemId);
         } else {
             setTitle("Add ingredient");
+            // New item: pre-select the unit chosen in Settings
+            String defaultUnit = AppPrefs.getDefaultUnit(this);
+            String[] units = getResources().getStringArray(R.array.units);
+            for (int i = 0; i < units.length; i++) {
+                if (units[i].equalsIgnoreCase(defaultUnit)) {
+                    spinnerUnit.setSelection(i);
+                    break;
+                }
+            }
         }
 
         editExpiry.setOnClickListener(v -> showDatePicker());
